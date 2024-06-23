@@ -3,6 +3,7 @@ package image2lrxmp
 import (
 	"github.com/SixbucksSolutions/image2lrxmp/filehandlers"
 	"github.com/google/uuid"
+	"github.com/trimmer-io/go-xmp/xmp"
 )
 
 type Image2LRXMP struct {
@@ -13,7 +14,7 @@ type ImageFileFormatHandler interface {
 	Name() string
 	Description() string
 	RunDetector([]byte) float32
-	ExtractXmpData([]byte) string
+	CreateXmpMetadataFromImageBytes([]byte) (*xmp.Document, error)
 }
 
 type HandlerMatch struct {
@@ -31,6 +32,7 @@ func MakeImage2LRXMP() Image2LRXMP {
 	myLib.imageFileFormatHandlers[uuid.New()] = filehandlers.RawCanonCr3{}
 	return myLib
 }
+
 func (i Image2LRXMP) DetectImageType(bytes []byte, minConfidenceForMatch float32) []HandlerMatch {
 	var matchingHandlers []HandlerMatch
 

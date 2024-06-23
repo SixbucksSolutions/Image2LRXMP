@@ -1,9 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"image2lrxmp/image2lrxmp"
-)
+import "fmt"
+import "github.com/SixbucksSolutions/image2lrxmp"
 
 func main() {
 	libHandle := image2lrxmp.MakeImage2LRXMP()

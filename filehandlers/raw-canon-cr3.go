@@ -15,6 +15,6 @@ func (cr3 RawCanonCr3) RunDetector([]byte) float32 {
 	return 1.0
 }
 
-func (cr3 RawCanonCr3) RunParser([]byte) string {
+func (cr3 RawCanonCr3) ExtractXmpData([]byte) string {
 	return ""
 }

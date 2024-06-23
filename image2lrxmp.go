@@ -1,9 +1,8 @@
 package image2lrxmp
 
 import (
-	"fmt"
+	"github.com/SixbucksSolutions/image2lrxmp/filehandlers"
 	"github.com/google/uuid"
-	"image2lrxmp/image2lrxmp/filehandlers"
 )
 
 type Image2LRXMP struct {
@@ -14,7 +13,7 @@ type ImageFileFormatHandler interface {
 	Name() string
 	Description() string
 	RunDetector([]byte) float32
-	RunParser([]byte) string
+	ExtractXmpData([]byte) string
 }
 
 type HandlerMatch struct {
@@ -27,13 +26,12 @@ func MakeImage2LRXMP() Image2LRXMP {
 		imageFileFormatHandlers: make(map[uuid.UUID]ImageFileFormatHandler),
 	}
 
-	// Add known handlers -- how can we scan for these?
+	// Add known handlers -- how can we scan for these so they're dynamically added like plugins?
+	//		Decorators or some such, like how sometimes they mark tests for JUnit and such?
 	myLib.imageFileFormatHandlers[uuid.New()] = filehandlers.RawCanonCr3{}
 	return myLib
 }
 func (i Image2LRXMP) DetectImageType(bytes []byte, minConfidenceForMatch float32) []HandlerMatch {
-
-	fmt.Println("DetectImageType")
 	var matchingHandlers []HandlerMatch
 
 	for _, handler := range i.imageFileFormatHandlers {

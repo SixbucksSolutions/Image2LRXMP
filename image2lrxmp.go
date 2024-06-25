@@ -1,48 +1,20 @@
 package image2lrxmp
 
 import (
+	"fmt"
 	"github.com/SixbucksSolutions/image2lrxmp/filehandlers"
-	"github.com/google/uuid"
-	"github.com/trimmer-io/go-xmp/xmp"
 )
 
 type Image2LRXMP struct {
-	imageFileFormatHandlers map[uuid.UUID]ImageFileFormatHandler
+	fileHandlerMgr *filehandlers.FileHandlerMgr
 }
 
-type ImageFileFormatHandler interface {
-	Name() string
-	Description() string
-	RunDetector([]byte) float32
-	CreateXmpMetadataFromImageBytes([]byte) (*xmp.Document, error)
-}
-
-type HandlerMatch struct {
-	Handler    ImageFileFormatHandler
-	Confidence float32
-}
-
-func MakeImage2LRXMP() Image2LRXMP {
-	myLib := Image2LRXMP{
-		imageFileFormatHandlers: make(map[uuid.UUID]ImageFileFormatHandler),
+func NewImage2LRXMP() *Image2LRXMP {
+	return &Image2LRXMP{
+		fileHandlerMgr: filehandlers.GetFileHandlerMgrInstance(),
 	}
-
-	// Add known handlers -- how can we scan for these so they're dynamically added like plugins?
-	//		Decorators or some such, like how sometimes they mark tests for JUnit and such?
-	myLib.imageFileFormatHandlers[uuid.New()] = filehandlers.RawCanonCr3{}
-	return myLib
 }
 
-func (i Image2LRXMP) DetectImageType(bytes []byte, minConfidenceForMatch float32) []HandlerMatch {
-	var matchingHandlers []HandlerMatch
-
-	for _, handler := range i.imageFileFormatHandlers {
-		// See how well we match
-		thisMatch := handler.RunDetector(bytes)
-		if thisMatch >= minConfidenceForMatch {
-			matchingHandlers = append(matchingHandlers, HandlerMatch{handler, thisMatch})
-		}
-	}
-
-	return matchingHandlers
+func (Image2LRXMP) PrintHello() {
+	fmt.Println("Hello")
 }

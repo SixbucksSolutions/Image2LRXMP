@@ -2,25 +2,30 @@ package filehandlers
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 )
 
 type RawCanonCr3 struct {
-	handlerUuid uuid.UUID
 }
+
+var rawCanonCr3Instance RawCanonCr3
 
 func init() {
-	fmt.Println("Inside CR3 init")
+	//fmt.Println("Inside CR3 init")
+	rawCanonCr3Instance = RawCanonCr3{}
 
-	fileHandlerMgr = GetFileHandlerMgrInstance()
+	fileHandlerMgr = FileHandlerMgrInstance()
 
-	fileHandlerMgr.RegisterFileType(RawCanonCr3{}, nil)
+	fileExtensionHints := []string{"cr3"}
+
+	if err := fileHandlerMgr.RegisterFileType(rawCanonCr3Instance, nil, fileExtensionHints); err != nil {
+		fmt.Println("Error in registering RawCanonCr3: ", err)
+	}
 }
 
-func (i RawCanonCr3) Name() string {
+func (RawCanonCr3) Name() string {
 	return "Raw.Canon.Cr3"
 }
 
-func (i RawCanonCr3) Description() string {
+func (RawCanonCr3) Description() string {
 	return ""
 }

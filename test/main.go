@@ -48,6 +48,8 @@ func main() {
 	//	panic("Could not run stat on our open input file?!?!?")
 	//}
 
-	var libHandle = image2lrxmp.NewImage2LRXMP()
-	libHandle.PrintHello()
+	libHandle := image2lrxmp.NewImage2LRXMP()
+
+	// Get the metadata
+	libHandle.ReadImageMetadata("C:\\Temp\\PhotoEndOfDay\\Input\\input1\\_50A0001.CR3")
 }

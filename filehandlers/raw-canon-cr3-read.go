@@ -2,13 +2,21 @@ package filehandlers
 
 import (
 	"github.com/SixbucksSolutions/image2lrxmp/imagemetadata"
+	"github.com/evanoberholster/imagemeta"
 	"io"
 )
 
-func (cr3 RawCanonCr3) ExtractImageMetadata(*io.ReadSeeker) *imagemetadata.ImageMetadata {
+func (cr3 RawCanonCr3) ExtractImageMetadata(reader *io.ReadSeeker) *imagemetadata.ImageMetadata {
 
 	// Create "reader" wrapper around our bytes to meet imagemeta interface
-	//err := imagemeta.Decode(reader)
+	exifInfo, err := imagemeta.Decode(*reader)
+	if err != nil {
+		panic("Could not read metadata")
+	}
+
+	metadata := imagemetadata.ImageMetadata{}
+
+	metadata.Metadata["camera-serial-number"] = exifInfo.CameraSerial
 
 	//fmt.Println(imageInfo)
 
@@ -26,5 +34,5 @@ func (cr3 RawCanonCr3) ExtractImageMetadata(*io.ReadSeeker) *imagemetadata.Image
 	// https://github.com/rwcarlsen/goexif9i
 
 	// What can we populate in the key-value store we send down to XMP writer?
-	return nil
+	return &metadata
 }

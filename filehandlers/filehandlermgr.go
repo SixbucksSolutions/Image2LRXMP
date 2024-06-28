@@ -1,18 +1,14 @@
 package filehandlers
 
 import (
-	"github.com/google/uuid"
+	"fmt"
+	"strings"
 	"sync"
 )
 
 type FileHandlerMgr struct {
 	imageFileFormatReaders sync.Map
 	imageFileFormatWriters sync.Map
-}
-
-type handlerNameDescription struct {
-	name        string
-	description string
 }
 
 var fileHandlerMgr *FileHandlerMgr
@@ -24,20 +20,37 @@ func init() {
 	}
 }
 
-func GetFileHandlerMgrInstance() *FileHandlerMgr {
+func FileHandlerMgrInstance() *FileHandlerMgr {
 	return fileHandlerMgr
 }
 
 func (i *FileHandlerMgr) RegisterFileType(
 	reader ImageFileMetadataReader,
-	writer ImageFileMetadataWriter) uuid.UUID {
-
-	newHandlerId := uuid.New()
+	writer ImageFileMetadataWriter,
+	fileExtensionHints []string) error {
 	if reader != nil {
-		i.imageFileFormatReaders.Store(newHandlerId, reader)
+		for _, fileExtension := range fileExtensionHints {
+			// See if we already know about this file type?
+			lcExtension := strings.ToLower(fileExtension)
+
+			val, ok := i.imageFileFormatReaders.Load(lcExtension)
+
+			if !ok {
+				readerArray := []ImageFileMetadataReader{reader}
+				i.imageFileFormatReaders.Store(fileExtension, readerArray)
+			} else {
+				i.imageFileFormatReaders.Store(fileExtension,
+					append(val.([]ImageFileMetadataReader), reader))
+			}
+		}
+
+		fmt.Printf("Successfully registered handler \"%s\" to read files with extensions %v\n",
+			reader.Name(), fileExtensionHints)
 	}
 	if writer != nil {
-		i.imageFileFormatWriters.Store(newHandlerId, writer)
+		fmt.Printf("Attempted to register handler \"%s\" to write files with extensions %v\n",
+			writer.Name(), fileExtensionHints)
 	}
-	return newHandlerId
+
+	return nil
 }
